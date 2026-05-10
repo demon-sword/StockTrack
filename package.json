@@ -1,0 +1,70 @@
+{
+  "name": "stocktrack",
+  "version": "1.0.0",
+  "description": "Inventory tracking desktop application for material business",
+  "main": "main.js",
+  "author": "",
+  "scripts": {
+    "start": "npm run webpack:build && electron .",
+    "build": "webpack --mode production && electron-builder",
+    "build:win": "webpack --mode production && electron-builder --win",
+    "build:mac": "webpack --mode production && electron-builder --mac",
+    "build:linux": "webpack --mode production && electron-builder --linux",
+    "webpack:watch": "webpack --mode development --watch",
+    "webpack:build": "webpack --mode production",
+    "dev": "webpack --mode development && electron ."
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.9.0",
+    "css-loader": "^7.1.4",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.15.0",
+    "style-loader": "^4.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.5",
+    "@babel/preset-react": "^7.28.5",
+    "babel-loader": "^10.1.1",
+    "concurrently": "^9.2.1",
+    "copy-webpack-plugin": "^14.0.0",
+    "electron": "^41.5.1",
+    "electron-builder": "^26.8.1",
+    "electron-rebuild": "^3.2.9",
+    "html-webpack-plugin": "^5.6.7",
+    "wait-on": "^8.0.5",
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2"
+  },
+  "build": {
+    "appId": "com.stocktrack.app",
+    "productName": "StockTrack",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*",
+      "src/main/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    }
+  }
+}
