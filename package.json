@@ -6,10 +6,10 @@
   "author": "",
   "scripts": {
     "start": "npm run webpack:build && electron .",
-    "build": "webpack --mode production && electron-builder",
-    "build:win": "webpack --mode production && electron-builder --win",
-    "build:mac": "webpack --mode production && electron-builder --mac",
-    "build:linux": "webpack --mode production && electron-builder --linux",
+    "build": "npm run webpack:build && electron-builder",
+    "build:win": "npm run webpack:build && electron-builder --win --x64",
+    "build:mac": "npm run webpack:build && electron-builder --mac",
+    "build:linux": "npm run webpack:build && electron-builder --linux",
     "webpack:watch": "webpack --mode development --watch",
     "webpack:build": "webpack --mode production",
     "dev": "webpack --mode development && electron ."
@@ -47,11 +47,13 @@
       "main.js",
       "preload.js",
       "dist/**/*",
-      "src/main/**/*"
+      "src/main/**/*",
+      "node_modules/**/*"
     ],
     "win": {
       "target": "nsis",
-      "icon": "public/icon.ico"
+      "icon": "public/icon.ico",
+      "artifactName": "${productName}-${version}-Setup.${ext}"
     },
     "mac": {
       "target": "dmg",
@@ -64,7 +66,12 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
-    }
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "asar": true,
+    "npmRebuild": true,
+    "publish": null
   }
 }
