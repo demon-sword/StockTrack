@@ -5,7 +5,8 @@
   "main": "main.js",
   "author": "",
   "scripts": {
-    "start": "npm run webpack:build && electron .",
+    "start": "electron-rebuild -f -w better-sqlite3 && npm run webpack:build && electron .",
+    "postinstall": "electron-rebuild -f -w better-sqlite3",
     "build": "npm run webpack:build && electron-builder",
     "build:win": "npm run webpack:build && electron-builder --win --x64",
     "build:mac": "npm run webpack:build && electron-builder --mac",
