@@ -5,9 +5,7 @@
   "main": "main.js",
   "author": "",
   "scripts": {
-    "start": "electron-rebuild -f -w better-sqlite3 && npm run webpack:build && electron .",
-    "postinstall": "electron-rebuild -f -w better-sqlite3",
-    "build": "npm run webpack:build && electron-builder",
+    "start": "npm run webpack:build && electron .",
     "build:win": "npm run webpack:build && electron-builder --win --x64",
     "build:mac": "npm run webpack:build && electron-builder --mac",
     "build:linux": "npm run webpack:build && electron-builder --linux",
@@ -16,11 +14,11 @@
     "dev": "webpack --mode development && electron ."
   },
   "dependencies": {
-    "better-sqlite3": "^12.9.0",
     "css-loader": "^7.1.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.0",
+    "sql.js": "^1.14.1",
     "style-loader": "^4.0.0"
   },
   "devDependencies": {
@@ -32,7 +30,6 @@
     "copy-webpack-plugin": "^14.0.0",
     "electron": "^41.5.1",
     "electron-builder": "^26.8.1",
-    "electron-rebuild": "^3.2.9",
     "html-webpack-plugin": "^5.6.7",
     "wait-on": "^8.0.5",
     "webpack": "^5.106.2",
@@ -49,20 +46,17 @@
       "preload.js",
       "dist/**/*",
       "src/main/**/*",
-      "node_modules/**/*"
+      "node_modules/sql.js/**/*"
     ],
     "win": {
       "target": "nsis",
-      "icon": "public/icon.ico",
       "artifactName": "${productName}-${version}-Setup.${ext}"
     },
     "mac": {
-      "target": "dmg",
-      "icon": "public/icon.icns"
+      "target": "dmg"
     },
     "linux": {
-      "target": "AppImage",
-      "icon": "public/icon.png"
+      "target": "AppImage"
     },
     "nsis": {
       "oneClick": false,
@@ -72,7 +66,7 @@
       "createStartMenuShortcut": true
     },
     "asar": true,
-    "npmRebuild": true,
+    "npmRebuild": false,
     "publish": null
   }
 }

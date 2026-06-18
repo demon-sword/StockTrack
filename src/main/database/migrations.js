@@ -1,7 +1,6 @@
-const db = require('./db');
+const { getDb, saveDb } = require('./db');
 
 const migrations = [
-  // Vendors
   `CREATE TABLE IF NOT EXISTS vendors (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -11,7 +10,6 @@ const migrations = [
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
 
-  // Job Workers
   `CREATE TABLE IF NOT EXISTS job_workers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -21,7 +19,6 @@ const migrations = [
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
 
-  // Polishers
   `CREATE TABLE IF NOT EXISTS polishers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -31,7 +28,6 @@ const migrations = [
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
 
-  // Customers
   `CREATE TABLE IF NOT EXISTS customers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -41,7 +37,6 @@ const migrations = [
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
 
-  // Material Types
   `CREATE TABLE IF NOT EXISTS material_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
@@ -49,7 +44,6 @@ const migrations = [
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
 
-  // Raw Material Inward
   `CREATE TABLE IF NOT EXISTS raw_material_inward (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     batch_number TEXT NOT NULL UNIQUE,
@@ -65,7 +59,6 @@ const migrations = [
     FOREIGN KEY (material_type_id) REFERENCES material_types(id)
   )`,
 
-  // Job Work Orders
   `CREATE TABLE IF NOT EXISTS job_work_orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_number TEXT NOT NULL UNIQUE,
@@ -74,7 +67,7 @@ const migrations = [
     weight_sent_kg REAL NOT NULL,
     pieces_received INTEGER,
     actual_conversion_rate REAL,
-    status TEXT DEFAULT 'in-progress' CHECK(status IN ('in-progress', 'completed')),
+    status TEXT DEFAULT 'in-progress',
     sent_date DATE NOT NULL,
     returned_date DATE,
     notes TEXT,
@@ -83,7 +76,6 @@ const migrations = [
     FOREIGN KEY (job_worker_id) REFERENCES job_workers(id)
   )`,
 
-  // Polishing Orders
   `CREATE TABLE IF NOT EXISTS polishing_orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_number TEXT NOT NULL UNIQUE,
@@ -92,7 +84,7 @@ const migrations = [
     pieces_sent INTEGER NOT NULL,
     pieces_received INTEGER,
     polishing_rate_per_piece REAL DEFAULT 0,
-    status TEXT DEFAULT 'in-progress' CHECK(status IN ('in-progress', 'completed')),
+    status TEXT DEFAULT 'in-progress',
     sent_date DATE NOT NULL,
     returned_date DATE,
     notes TEXT,
@@ -101,7 +93,6 @@ const migrations = [
     FOREIGN KEY (polisher_id) REFERENCES polishers(id)
   )`,
 
-  // Sales
   `CREATE TABLE IF NOT EXISTS sales (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     invoice_number TEXT NOT NULL UNIQUE,
@@ -115,7 +106,6 @@ const migrations = [
     FOREIGN KEY (customer_id) REFERENCES customers(id)
   )`,
 
-  // Material Movements (for traceability)
   `CREATE TABLE IF NOT EXISTS material_movements (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     movement_type TEXT NOT NULL,
@@ -126,24 +116,14 @@ const migrations = [
     quantity_out REAL DEFAULT 0,
     quantity_balance REAL DEFAULT 0,
     location TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (material_type_id) REFERENCES material_types(id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
-
-  // Indices for performance
-  `CREATE INDEX IF NOT EXISTS idx_raw_material_vendor ON raw_material_inward(vendor_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_raw_material_type ON raw_material_inward(material_type_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_job_work_inward ON job_work_orders(parent_inward_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_job_work_worker ON job_work_orders(job_worker_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_polishing_job_work ON polishing_orders(parent_job_work_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_sales_customer ON sales(customer_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_movements_batch ON material_movements(batch_number)`,
 ];
 
-function initDatabase() {
-  db.transaction(() => {
-    migrations.forEach((sql) => db.exec(sql));
-  })();
+async function initDatabase() {
+  const db = await getDb();
+  migrations.forEach((sql) => db.run(sql));
+  saveDb();
   console.log('Database initialized successfully');
 }
 

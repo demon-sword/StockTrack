@@ -1,32 +1,33 @@
 const { ipcMain } = require('electron');
-const db = require('../database/db');
+const { all, get, run } = require('../database/dbHelper');
 
 const TABLE = 'material_types';
 
-ipcMain.handle(`${TABLE}-getAll`, () => {
-  const stmt = db.prepare(`SELECT * FROM ${TABLE} ORDER BY name ASC`);
-  return stmt.all();
+ipcMain.handle(`${TABLE}-getAll`, async () => {
+  return await all(`SELECT * FROM ${TABLE} ORDER BY name ASC`);
 });
 
-ipcMain.handle(`${TABLE}-getById`, (event, id) => {
-  const stmt = db.prepare(`SELECT * FROM ${TABLE} WHERE id = ?`);
-  return stmt.get(id);
+ipcMain.handle(`${TABLE}-getById`, async (_, id) => {
+  return await get(`SELECT * FROM ${TABLE} WHERE id = ?`, [id]);
 });
 
-ipcMain.handle(`${TABLE}-create`, (event, data) => {
-  const stmt = db.prepare(`INSERT INTO ${TABLE} (name, default_conversion_rate) VALUES (?, ?)`);
-  const result = stmt.run(data.name, data.default_conversion_rate || 10);
+ipcMain.handle(`${TABLE}-create`, async (_, data) => {
+  const result = await run(
+    `INSERT INTO ${TABLE} (name, default_conversion_rate) VALUES (?, ?)`,
+    [data.name, data.default_conversion_rate || 10]
+  );
   return { id: result.lastInsertRowid, ...data };
 });
 
-ipcMain.handle(`${TABLE}-update`, (event, id, data) => {
-  const stmt = db.prepare(`UPDATE ${TABLE} SET name = ?, default_conversion_rate = ? WHERE id = ?`);
-  stmt.run(data.name, data.default_conversion_rate || 10, id);
+ipcMain.handle(`${TABLE}-update`, async (_, id, data) => {
+  await run(
+    `UPDATE ${TABLE} SET name = ?, default_conversion_rate = ? WHERE id = ?`,
+    [data.name, data.default_conversion_rate || 10, id]
+  );
   return { id, ...data };
 });
 
-ipcMain.handle(`${TABLE}-delete`, (event, id) => {
-  const stmt = db.prepare(`DELETE FROM ${TABLE} WHERE id = ?`);
-  stmt.run(id);
+ipcMain.handle(`${TABLE}-delete`, async (_, id) => {
+  await run(`DELETE FROM ${TABLE} WHERE id = ?`, [id]);
   return { success: true };
 });
