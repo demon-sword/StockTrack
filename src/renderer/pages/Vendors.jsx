@@ -8,9 +8,13 @@ const Vendors = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await create(formData);
-    setFormData({ name: '', contact: '', phone: '', email: '' });
-    setShowModal(false);
+    try {
+      await create(formData);
+      setFormData({ name: '', contact: '', phone: '', email: '' });
+      setShowModal(false);
+    } catch (error) {
+      alert('Failed to save vendor. Please try again.');
+    }
   };
 
   if (loading) return <div>Loading...</div>;

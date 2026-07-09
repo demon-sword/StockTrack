@@ -1,15 +1,20 @@
 const path = require('path');
 const fs = require('fs');
+const { app } = require('electron');
 const initSqlJs = require('sql.js');
 
-const dbPath = path.join(__dirname, '../../../inventory.db');
+const dbPath = path.join(app.getPath('userData'), 'inventory.db');
 
 let db = null;
 
 async function getDb() {
   if (db) return db;
 
-  const SQL = await initSqlJs();
+  const SQL = await initSqlJs({
+    locateFile: (file) => {
+      return path.join(__dirname, '../../../node_modules/sql.js/dist/', file);
+    }
+  });
 
   if (fs.existsSync(dbPath)) {
     const fileBuffer = fs.readFileSync(dbPath);
@@ -23,9 +28,13 @@ async function getDb() {
 
 function saveDb() {
   if (!db) return;
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  fs.writeFileSync(dbPath, buffer);
+  try {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(dbPath, buffer);
+  } catch (err) {
+    console.error('Failed to save database:', err);
+  }
 }
 
 module.exports = { getDb, saveDb };

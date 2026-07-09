@@ -21,20 +21,35 @@ export function useIPC(moduleName) {
   };
 
   const create = async (item) => {
-    const result = await window.electronAPI[moduleName].create(item);
-    await loadData();
-    return result;
+    try {
+      const result = await window.electronAPI[moduleName].create(item);
+      await loadData();
+      return result;
+    } catch (error) {
+      console.error(`Error creating ${moduleName}:`, error);
+      throw error;
+    }
   };
 
   const update = async (id, item) => {
-    const result = await window.electronAPI[moduleName].update(id, item);
-    await loadData();
-    return result;
+    try {
+      const result = await window.electronAPI[moduleName].update(id, item);
+      await loadData();
+      return result;
+    } catch (error) {
+      console.error(`Error updating ${moduleName}:`, error);
+      throw error;
+    }
   };
 
   const remove = async (id) => {
-    await window.electronAPI[moduleName].delete(id);
-    await loadData();
+    try {
+      await window.electronAPI[moduleName].delete(id);
+      await loadData();
+    } catch (error) {
+      console.error(`Error deleting ${moduleName}:`, error);
+      throw error;
+    }
   };
 
   return { data, loading, refresh: loadData, create, update, remove };

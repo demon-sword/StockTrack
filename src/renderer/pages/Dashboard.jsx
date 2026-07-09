@@ -100,9 +100,9 @@ const Dashboard = () => {
         <div className="card">
           <h3 className="card-title">Quick Actions</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <button className="btn btn-primary" onClick={() => window.location.href = '/raw-material'}>Add Raw Material</button>
-            <button className="btn btn-secondary" onClick={() => window.location.href = '/job-work'}>Create Job Work Order</button>
-            <button className="btn btn-secondary" onClick={() => window.location.href = '/sales'}>Create Sale</button>
+            <button className="btn btn-primary" onClick={() => window.location.hash = '#/raw-material'}>Add Raw Material</button>
+            <button className="btn btn-secondary" onClick={() => window.location.hash = '#/job-work'}>Create Job Work Order</button>
+            <button className="btn btn-secondary" onClick={() => window.location.hash = '#/sales'}>Create Sale</button>
           </div>
         </div>
       </div>

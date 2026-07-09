@@ -22,28 +22,36 @@ const RawMaterial = () => {
   }, []);
 
   const loadMasterData = async () => {
-    const [vendorsData, typesData] = await Promise.all([
-      window.electronAPI.vendors.getAll(),
-      window.electronAPI.materialTypes.getAll()
-    ]);
-    setVendors(vendorsData || []);
-    setMaterialTypes(typesData || []);
+    try {
+      const [vendorsData, typesData] = await Promise.all([
+        window.electronAPI.vendors.getAll(),
+        window.electronAPI.materialTypes.getAll()
+      ]);
+      setVendors(vendorsData || []);
+      setMaterialTypes(typesData || []);
+    } catch (error) {
+      console.error('Failed to load master data:', error);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await create(formData);
-    setFormData({
-      batch_number: '',
-      vendor_id: '',
-      material_type_id: '',
-      weight_kg: '',
-      rate_per_kg: '',
-      total_amount: '',
-      purchase_date: new Date().toISOString().split('T')[0],
-      notes: ''
-    });
-    setShowModal(false);
+    try {
+      await create(formData);
+      setFormData({
+        batch_number: '',
+        vendor_id: '',
+        material_type_id: '',
+        weight_kg: '',
+        rate_per_kg: '',
+        total_amount: '',
+        purchase_date: new Date().toISOString().split('T')[0],
+        notes: ''
+      });
+      setShowModal(false);
+    } catch (error) {
+      alert('Failed to save entry. Please try again.');
+    }
   };
 
   if (loading) return <div>Loading...</div>;
